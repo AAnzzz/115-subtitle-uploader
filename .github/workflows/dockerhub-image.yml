@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME || secrets.DOCKER_USERNAME || vars.DOCKER_USERNAME || secrets.ANZZZZZ_USERNAME || vars.ANZZZZZ_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKER_PASSWORD || secrets.DOCKER_TOKEN || secrets.ANZZZZZ }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME || secrets.DOCKER_USERNAME || vars.DOCKER_USERNAME || secrets.ANZZZZZ_USERNAME || vars.ANZZZZZ_USERNAME || secrets['anzzzz_username'] || vars['anzzzz_username'] }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN || secrets.DOCKER_PASSWORD || secrets.DOCKER_TOKEN || secrets.ANZZZZZ || secrets['anzzzz'] }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -28,11 +28,11 @@ jobs:
       - name: Validate Docker Hub credentials
         run: |
           if [ -z "${DOCKERHUB_USERNAME}" ]; then
-            echo "Missing Docker Hub username. Supported names: DOCKERHUB_USERNAME / DOCKER_USERNAME / ANZZZZZ_USERNAME (secret/variable)." >&2
+            echo "Missing Docker Hub username. Supported names: DOCKERHUB_USERNAME / DOCKER_USERNAME / ANZZZZZ_USERNAME / anzzzz_username (secret/variable)." >&2
             exit 1
           fi
           if [ -z "${DOCKERHUB_TOKEN}" ]; then
-            echo "Missing Docker Hub token. Supported names: DOCKERHUB_TOKEN / DOCKER_PASSWORD / DOCKER_TOKEN / ANZZZZZ (secret)." >&2
+            echo "Missing Docker Hub token. Supported names: DOCKERHUB_TOKEN / DOCKER_PASSWORD / DOCKER_TOKEN / ANZZZZZ / anzzzz (secret)." >&2
             exit 1
           fi
 
