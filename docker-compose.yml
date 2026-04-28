@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: subtitle-115-app
+    ports:
+      - "3000:3000"
+    environment:
+      # Production: set strong values.
+      APP_PASSWORD: "change-me"
+      ENCRYPTION_KEY: "change-me-to-a-long-random-string-at-least-16-chars"
+      # Add your real domain origin in production, e.g. https://subtitle.example.com
+      CORS_ORIGIN: "http://localhost:3000,http://127.0.0.1:3000"
+      ENFORCE_ORIGIN_CHECK: "true"
+      COOKIE_SECURE: "false"
+      FAKE115_BIN: "/usr/local/bin/fake115uploader"
+      LOGIN_RATE_LIMIT_MAX: "8"
+      LOGIN_RATE_LIMIT_WINDOW_MS: "60000"
+      CLEANUP_INTERVAL_MS: "1800000"
+      PREVIEW_TTL_MS: "86400000"
+      TASK_WORKSPACE_TTL_MS: "259200000"
+      UPLOAD_CONCURRENCY: "1"
+      UPLOAD_RETRY: "2"
+      UPLOAD_RETRY_DELAY_MS: "1200"
+    volumes:
+      - ./data:/app/backend/data
+    restart: unless-stopped

@@ -1,0 +1,19 @@
+# Node
+**/node_modules
+**/dist
+
+# Runtime data
+/data
+/backend/data
+/backend/tmp-security
+
+# Local uploader binaries
+/backend/bin/fake115uploader
+/backend/bin/fake115uploader.exe
+/backend/bin/fake115uploader.json
+
+# Logs
+*.log
+
+# Misc
+.DS_Store
