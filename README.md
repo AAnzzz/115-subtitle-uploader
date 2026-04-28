@@ -95,6 +95,7 @@ docker compose up -d --build
 
 项目已提供工作流：
 - `.github/workflows/docker-image.yml`
+- `.github/workflows/dockerhub-image.yml`
 
 流程：
 1. 推送代码到 GitHub（`main` 分支或 `v*` tag）。
@@ -103,6 +104,13 @@ docker compose up -d --build
 3. Dockge 的 Stack 改用 `image:` 而不是 `build:`：
    - `image: ghcr.io/<你的用户名>/115-subtitle-uploader:latest`
 4. 每次更新只需在 Dockge 执行 `Pull` + `Recreate`（无需手工打包上传 VPS）。
+
+Docker Hub 自动发布配置：
+1. 在 GitHub 仓库 `Settings -> Secrets and variables -> Actions` 新增 secrets：
+   - `DOCKERHUB_USERNAME`
+   - `DOCKERHUB_TOKEN`（Docker Hub Access Token）
+2. 推送到 `main` 或打 `v*` tag 后，会自动推送镜像到：
+   - `<DOCKERHUB_USERNAME>/115-subtitle-uploader`
 
 ## 任务执行说明
 - 关闭浏览器页面后，任务仍会继续执行。
