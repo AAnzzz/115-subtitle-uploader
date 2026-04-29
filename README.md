@@ -1,7 +1,7 @@
 # 115 Subtitle Uploader
 
 一个面向单用户场景的 115 字幕批量上传工具。  
-核心流程是：保存 115 Cookie，选择网盘目录，导入本地字幕，预览重命名结果，然后批量上传。
+核心流程是保存 115 Cookie，选择 115 目录，导入本地字幕，预览重命名结果，然后批量上传。
 
 ## 功能
 
@@ -23,11 +23,38 @@
 - Cookie 使用加密存储
 - 管理员密码使用哈希存储
 
-## 部署
+## Docker Compose 部署
 
-- 支持本地运行
-- 支持 Docker / Docker Compose
-- 支持通过 GitHub Actions 自动构建镜像并推送到 Docker Hub / GHCR
+默认推荐直接使用 Docker Hub 镜像：
+
+```yaml
+services:
+  app:
+    image: anzzzzz/115-subtitle-uploader:latest
+    container_name: subtitle-115-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      APP_PASSWORD: "请改成你的密码"
+      ENCRYPTION_KEY: "请改成至少16位随机字符串"
+      CORS_ORIGIN: "http://localhost:3000"
+      ENFORCE_ORIGIN_CHECK: "true"
+    volumes:
+      - ./data:/app/backend/data
+```
+
+启动：
+
+```bash
+docker compose up -d
+```
+
+## 部署说明
+
+- `APP_PASSWORD` 与 `ENCRYPTION_KEY` 必须修改后再启动
+- `./data:/app/backend/data` 用于持久化 Cookie、任务历史与数据库
+- 如果你不是通过 `http://localhost:3000` 访问，而是通过服务器 IP 或域名访问，需要把 `CORS_ORIGIN` 改成实际访问地址
 
 ## 适用场景
 
