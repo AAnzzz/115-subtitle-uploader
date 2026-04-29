@@ -21,6 +21,7 @@
         <p>先选择目标目录，再按目录内视频文件自动匹配并上传字幕。</p>
       </div>
       <div class="hero-actions">
+        <el-button plain @click="toggleTheme">{{ isDarkMode ? "浅色模式" : "暗色模式" }}</el-button>
         <el-button plain @click="openManageCenter">管理中心</el-button>
         <el-button @click="doLogout" plain>退出登录</el-button>
       </div>
@@ -261,7 +262,7 @@
       </template>
       <el-progress :percentage="taskPercent" :status="currentTask.state === 'failed' ? 'exception' : undefined" />
       <p class="task-summary">
-        状态：{{ currentTask.state }} ｜ 成功 {{ currentTask.success }} / {{ currentTask.total }} ｜ 失败 {{ currentTask.failed }}
+        状态：{{ taskStateText(currentTask.state) }} ｜ 成功 {{ currentTask.success }} / {{ currentTask.total }} ｜ 失败 {{ currentTask.failed }} ｜ 待处理 {{ currentTask.pending }}
       </p>
       <el-button v-if="currentTask.failedItems.length" :loading="retrying" @click="retryFailedItems" type="warning">
         重试失败项
@@ -321,7 +322,7 @@
           <el-table-column prop="id" label="任务 ID" min-width="220" />
           <el-table-column label="状态" width="100">
             <template #default="{ row }">
-              {{ row.state }}
+              {{ taskStateText(row.state) }}
             </template>
           </el-table-column>
           <el-table-column label="进度" width="160">
@@ -364,7 +365,7 @@
         <template v-if="historyDetailTask">
           <el-descriptions :column="2" border size="small" style="margin-bottom: 12px">
             <el-descriptions-item label="任务 ID">{{ historyDetailTask.id }}</el-descriptions-item>
-            <el-descriptions-item label="状态">{{ historyDetailTask.state }}</el-descriptions-item>
+            <el-descriptions-item label="状态">{{ taskStateText(historyDetailTask.state) }}</el-descriptions-item>
             <el-descriptions-item label="成功">{{ historyDetailTask.success }}</el-descriptions-item>
             <el-descriptions-item label="失败">{{ historyDetailTask.failed }}</el-descriptions-item>
             <el-descriptions-item label="创建时间">{{ formatIsoTime(historyDetailTask.createdAt) }}</el-descriptions-item>
@@ -430,6 +431,7 @@ interface TrailNode {
 const authenticated = ref(false);
 const password = ref("");
 const loggingIn = ref(false);
+const isDarkMode = ref(false);
 const manageCenterVisible = ref(false);
 const currentPassword = ref("");
 const newPassword = ref("");
@@ -499,6 +501,34 @@ const previewPagedItems = computed(() => {
   const end = start + previewPageSize.value;
   return previewItems.value.slice(start, end);
 });
+
+const THEME_STORAGE_KEY = "subtitle-uploader-theme";
+
+function applyTheme(dark: boolean) {
+  isDarkMode.value = dark;
+  const root = document.documentElement;
+  root.classList.toggle("dark", dark);
+  root.setAttribute("data-theme", dark ? "dark" : "light");
+}
+
+function initTheme() {
+  const saved = window.localStorage.getItem(THEME_STORAGE_KEY);
+  if (saved === "dark") {
+    applyTheme(true);
+    return;
+  }
+  if (saved === "light") {
+    applyTheme(false);
+    return;
+  }
+  applyTheme(window.matchMedia("(prefers-color-scheme: dark)").matches);
+}
+
+function toggleTheme() {
+  const next = !isDarkMode.value;
+  applyTheme(next);
+  window.localStorage.setItem(THEME_STORAGE_KEY, next ? "dark" : "light");
+}
 
 function stopPolling() {
   if (pollTimer !== null) {
@@ -1188,6 +1218,19 @@ function formatDateTime(date: Date): string {
   ).padStart(2, "0")}`;
 }
 
+function taskStateText(state: UploadTask["state"]): string {
+  if (state === "pending") {
+    return "待处理";
+  }
+  if (state === "processing") {
+    return "处理中";
+  }
+  if (state === "completed") {
+    return "已完成";
+  }
+  return "失败";
+}
+
 function getError(error: unknown): string {
   if (typeof error === "object" && error && "response" in error) {
     const maybeResponse = error as {
@@ -1204,6 +1247,7 @@ function getError(error: unknown): string {
 }
 
 onMounted(() => {
+  initTheme();
   void checkAuth();
 });
 

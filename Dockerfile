@@ -4,16 +4,17 @@ RUN go install github.com/orzogc/fake115uploader@latest
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
-RUN npm ci
+RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
 RUN npm run build
 
 FROM node:20-alpine AS backend-builder
+RUN apk add --no-cache python3 make g++
 WORKDIR /app/backend
 COPY backend/package*.json ./
-RUN npm ci
+RUN npm ci --no-audit --no-fund
 COPY backend/ ./
-RUN npm run build
+RUN npm run build && npm prune --omit=dev
 
 FROM node:20-alpine AS runtime
 WORKDIR /app/backend

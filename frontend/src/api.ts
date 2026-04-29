@@ -45,11 +45,23 @@ export interface PreviewResult {
 export interface UploadTask {
   id: string;
   previewId: string;
-  state: "queued" | "running" | "completed" | "failed";
+  state: "pending" | "processing" | "completed" | "failed";
   total: number;
   success: number;
   failed: number;
+  pending: number;
+  processing: number;
   logs: Array<{ time: string; level: "info" | "error"; message: string; itemId?: string }>;
+  items: Array<{
+    itemId: string;
+    tempPath: string;
+    targetName: string;
+    cid: string;
+    state: "pending" | "processing" | "completed" | "failed";
+    attempts: number;
+    lastError?: string;
+    updatedAt: string;
+  }>;
   collisions: Array<{ itemId: string; originalName: string; resolvedName: string }>;
   failedItems: Array<{
     itemId: string;

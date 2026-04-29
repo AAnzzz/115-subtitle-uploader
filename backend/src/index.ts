@@ -183,7 +183,9 @@ async function bootstrap() {
 
   app.put("/api/115/cookie", async (req) => {
     const body = z.object({ cookie: z.string().min(10) }).parse(req.body);
-    store.setSetting("cookie_115", encryptText(body.cookie.trim()));
+    const cookieRaw = body.cookie.trim();
+    store.setSetting("cookie_115", encryptText(cookieRaw));
+    void taskManager.resumePendingTasks(cookieRaw);
     return { success: true };
   });
 
@@ -419,8 +421,8 @@ async function bootstrap() {
       });
     }
 
-    const task = taskManager.createTask(body.previewId, uploadItems.length, collisions);
-    void taskManager.runUpload(task.id, cookieRaw, uploadItems);
+    const task = taskManager.createTask(body.previewId, uploadItems, collisions);
+    void taskManager.runUpload(task.id, cookieRaw);
 
     return { taskId: task.id };
   });
@@ -442,10 +444,15 @@ async function bootstrap() {
       })
       .parse(req.query);
 
-    return store.listTasks({
+    const pageResult = store.listTasks({
       page: query.page ? Number(query.page) : 1,
       limit: query.limit ? Number(query.limit) : 20
     });
+
+    return {
+      ...pageResult,
+      items: pageResult.items.map((task) => taskManager.getTask(task.id) || task)
+    };
   });
 
   app.post("/api/tasks/:id/retry", async (req, reply) => {
@@ -518,6 +525,17 @@ async function bootstrap() {
     });
   }, config.cleanupIntervalMs);
   cleanupTimer.unref();
+
+  try {
+    const encrypted = store.getSetting("cookie_115");
+    const cookieRaw = encrypted ? decryptText(encrypted) : null;
+    const resumed = await taskManager.resumePendingTasks(cookieRaw);
+    if (resumed > 0) {
+      app.log.info({ resumed }, "recovered unfinished upload task(s)");
+    }
+  } catch (error) {
+    app.log.warn({ err: error }, "failed to recover unfinished tasks");
+  }
 
   app.listen({ port: config.port, host: config.host }).catch((error) => {
     app.log.error(error);

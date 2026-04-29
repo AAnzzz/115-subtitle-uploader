@@ -16,6 +16,52 @@
   --texture-opacity: 0.08;
   --font-base: clamp(14px, 0.35vw + 13px, 16px);
   --title-size: clamp(24px, 1.8vw + 16px, 38px);
+  --surface-strong: rgba(252, 251, 247, 0.94);
+  --surface-soft: rgba(242, 240, 233, 0.86);
+  --card-surface: rgba(252, 251, 247, 0.95);
+  --card-surface-2: rgba(244, 241, 234, 0.92);
+  --card-title: #2b4136;
+  --muted-text: #5f6f66;
+  --success-text: #2f6642;
+  --task-text: #2c3d37;
+  --mode-pill-bg: rgba(252, 251, 247, 0.9);
+  --mode-pill-text: #355445;
+  --log-bg-1: #1f2b2b;
+  --log-bg-2: #1a2624;
+  --log-text: #e8f1ec;
+  --status-ready-bg: #dff3e3;
+  --status-ready-text: #1f5a32;
+  --status-manual-bg: #fbeeca;
+  --status-manual-text: #875f10;
+}
+
+html.dark {
+  --bg-sand: #15201d;
+  --bg-rock: #1b2522;
+  --ink-900: #e7f0ea;
+  --ink-700: #b6c5bd;
+  --paper: #1f2a26;
+  --card-border: rgba(122, 157, 135, 0.28);
+  --shadow-soft: 0 14px 34px rgba(7, 11, 10, 0.44);
+  --shadow-hover: 0 18px 40px rgba(5, 10, 8, 0.54);
+  --texture-opacity: 0.06;
+  --surface-strong: rgba(29, 42, 37, 0.96);
+  --surface-soft: rgba(24, 35, 31, 0.9);
+  --card-surface: rgba(28, 40, 35, 0.96);
+  --card-surface-2: rgba(24, 34, 30, 0.92);
+  --card-title: #dcece2;
+  --muted-text: #aec2b6;
+  --success-text: #9fd9af;
+  --task-text: #d3e1d8;
+  --mode-pill-bg: rgba(24, 35, 31, 0.95);
+  --mode-pill-text: #d0e3d8;
+  --log-bg-1: #0f1715;
+  --log-bg-2: #13201b;
+  --log-text: #e2f0e8;
+  --status-ready-bg: rgba(52, 112, 77, 0.34);
+  --status-ready-text: #c4f5d3;
+  --status-manual-bg: rgba(133, 99, 31, 0.34);
+  --status-manual-text: #ffe4ad;
 }
 
 * {
@@ -83,7 +129,7 @@ body::before {
   margin-bottom: 16px;
   border-radius: var(--radius-xl);
   background:
-    linear-gradient(145deg, rgba(252, 251, 247, 0.94), rgba(242, 240, 233, 0.86)),
+    linear-gradient(145deg, var(--surface-strong), var(--surface-soft)),
     radial-gradient(circle at 15% 20%, rgba(116, 163, 122, 0.18), transparent 35%);
   border: 1px solid rgba(80, 106, 82, 0.18);
   box-shadow: var(--shadow-soft);
@@ -116,7 +162,7 @@ body::before {
 
 .soft-card {
   background:
-    linear-gradient(160deg, rgba(252, 251, 247, 0.95), rgba(244, 241, 234, 0.92));
+    linear-gradient(160deg, var(--card-surface), var(--card-surface-2));
   border: 1px solid var(--card-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-soft);
@@ -135,7 +181,7 @@ body::before {
 .card-title {
   font-size: clamp(16px, 0.4vw + 15px, 20px);
   font-weight: 700;
-  color: #2b4136;
+  color: var(--card-title);
 }
 
 .toolbar,
@@ -155,8 +201,8 @@ body::before {
 
 .mode-pill {
   border: 1px solid rgba(95, 122, 99, 0.3);
-  background: rgba(252, 251, 247, 0.9);
-  color: #355445;
+  background: var(--mode-pill-bg);
+  color: var(--mode-pill-text);
   border-radius: 999px;
   padding: 8px 16px;
   font-size: 14px;
@@ -178,7 +224,7 @@ body::before {
 
 .manage-drawer .el-drawer__body {
   background:
-    linear-gradient(170deg, rgba(245, 243, 236, 0.96), rgba(236, 232, 223, 0.94)),
+    linear-gradient(170deg, var(--card-surface), var(--card-surface-2)),
     radial-gradient(circle at 20% 10%, rgba(110, 156, 124, 0.14), transparent 38%);
 }
 
@@ -192,7 +238,7 @@ body::before {
 
 .trail-label,
 .muted-text {
-  color: #5f6f66;
+  color: var(--muted-text);
   font-size: 0.92em;
 }
 
@@ -212,7 +258,7 @@ body::before {
 
 .selected-folder {
   margin-top: 10px;
-  color: #2f6642;
+  color: var(--success-text);
   font-weight: 600;
 }
 
@@ -222,7 +268,7 @@ body::before {
 
 .task-summary {
   margin: 12px 0;
-  color: #2c3d37;
+  color: var(--task-text);
 }
 
 .log-panel {
@@ -230,8 +276,8 @@ body::before {
   overflow: auto;
   padding: 10px;
   border-radius: var(--radius-md);
-  background: linear-gradient(145deg, #1f2b2b, #1a2624);
-  color: #e8f1ec;
+  background: linear-gradient(145deg, var(--log-bg-1), var(--log-bg-2));
+  color: var(--log-text);
   font-family: Consolas, "Courier New", monospace;
   font-size: clamp(11px, 0.15vw + 11px, 13px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -253,13 +299,13 @@ body::before {
 }
 
 .status-ready {
-  background: #dff3e3;
-  color: #1f5a32;
+  background: var(--status-ready-bg);
+  color: var(--status-ready-text);
 }
 
 .status-manual {
-  background: #fbeeca;
-  color: #875f10;
+  background: var(--status-manual-bg);
+  color: var(--status-manual-text);
 }
 
 .btn-primary.el-button {

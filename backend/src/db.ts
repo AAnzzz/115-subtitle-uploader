@@ -14,6 +14,10 @@ ensureDir(paths.tasksDir);
 
 const db = new Database(paths.dbFile);
 db.pragma("journal_mode = WAL");
+db.pragma("synchronous = NORMAL");
+db.pragma("busy_timeout = 5000");
+db.pragma("foreign_keys = ON");
+db.pragma("temp_store = MEMORY");
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS settings (
@@ -50,6 +54,8 @@ CREATE TABLE IF NOT EXISTS tasks (
   payload TEXT NOT NULL,
   updated_at INTEGER NOT NULL
 );
+
+CREATE INDEX IF NOT EXISTS idx_tasks_updated_at ON tasks(updated_at DESC);
 `);
 
 export const store = {
@@ -149,6 +155,17 @@ export const store = {
       page,
       limit
     };
+  },
+  listTasksByStates(states: string[]): UploadTask[] {
+    if (states.length === 0) {
+      return [];
+    }
+    const rows = db
+      .prepare("SELECT payload FROM tasks ORDER BY updated_at ASC")
+      .all() as Array<{ payload: string }>;
+    return rows
+      .map((row) => JSON.parse(row.payload) as UploadTask)
+      .filter((task) => states.includes(task.state));
   }
 };
 
